@@ -1,0 +1,23 @@
+{
+  "name": "cos-upload",
+  "version": "1.0.0",
+  "description": "Upload file to tencent cloud COS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jehan-Gao/cos-upload.git"
+  },
+  "author": "jehan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jehan-Gao/cos-upload/issues"
+  },
+  "homepage": "https://github.com/Jehan-Gao/cos-upload#readme",
+  "dependencies": {
+    "minimist": "^1.2.5"
+  },
+  "bin": "./bin/main.js"
+}
