@@ -17,7 +17,12 @@
   },
   "homepage": "https://github.com/Jehan-Gao/cos-upload#readme",
   "dependencies": {
+    "cos-nodejs-sdk-v5": "^2.6.2",
+    "dotenv": "^8.2.0",
+    "dotenv-flow": "^3.2.0",
     "minimist": "^1.2.5"
   },
-  "bin": "./bin/main.js"
+  "bin": {
+    "cos-upload": "./bin/main.js"
+  }
 }
