@@ -14,20 +14,47 @@ let VARIABLES = null
 let spinner
 
 function start(argv) {
-  if (argv.d && (argv.m || argv.mode)) {
-    VARIABLES = dotenvFlow.parse([
-      path.resolve(ROOT_PATH, `.env.${argv.m ? argv.m : argv.mode}`)
-    ])
-  } else if (argv.d){
-    VARIABLES = dotenvFlow.parse([
-      path.resolve(ROOT_PATH, '.env')
-    ])
+  if (argv.d) {
+    if ((argv.m || argv.mode)) {
+      VARIABLES = dotenvFlow.parse([
+        path.resolve(ROOT_PATH, `.env.${argv.m ? argv.m : argv.mode}`)
+      ])
+    } else {
+      VARIABLES = dotenvFlow.parse([
+        path.resolve(ROOT_PATH, '.env')
+      ])
+    }
+    if (Array.isArray(argv.d)) {
+      argv.d.forEach(dirName => {
+        resolveDirectory(dirName)
+      })
+    } else {
+      resolveDirectory(argv.d)
+    }
+  }
+
+  if (argv.f) {
+    if ((argv.m || argv.mode)) {
+      VARIABLES = dotenvFlow.parse([
+        path.resolve(ROOT_PATH, `.env.${argv.m ? argv.m : argv.mode}`)
+      ])
+    } else {
+      VARIABLES = dotenvFlow.parse([
+        path.resolve(ROOT_PATH, '.env')
+      ])
+    }
+    if (Array.isArray(argv.f)) {
+      argv.f.forEach(fileName => {
+        resolveFile(fileName)
+      })
+    } else {
+      resolveFile(argv.f)
+    }
   }
   if (!VARIABLES) {
     output.error('Error: > not found any variable')
     return
   }
-  resolveDirectory(argv.d)
 }
 
 function resolvePath(path) {
@@ -84,14 +111,20 @@ function readDirectory(dirPath) {
   }
 }
 
-// function resolveFile() {
+function resolveFile(fileName) {
+  resolvePath(path.parse(fileName).base)
+  const filePath = path.resolve(ROOT_PATH, fileName)
+  const stat = fs.statSync(filePath)
+  if (!stat.isFile()) {
+    output.error('Error: > not a File')
+    return
+  }
+  readFile(filePath)
+}
 
-// }
-
-// function readFile(filePath) {
-//   console.log('readFile:', filePath)
-//   console.log(path.parse(filePath))
-// }
+function readFile(filePath) {
+  uploadToCos(filePath)
+}
 
 function uploadToCos(filePath) {
   showLoading(filePath)
