@@ -112,7 +112,7 @@ function uploadToCos(filePath) {
     },
   }, function (err, data) {
     if (err) throw err
-    output.success(`${COS_DOMAIN}/${data.Key}`)
+    output.printLink(`${COS_DOMAIN}/${data.Key}`)
   })
 }
 
