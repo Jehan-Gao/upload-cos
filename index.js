@@ -2,12 +2,16 @@ const fs = require('fs')
 const path = require('path')
 const COS = require('cos-nodejs-sdk-v5')
 const dotenvFlow = require('dotenv-flow')
+const ora = require('ora')
 const output = require('./util/output')
 
 const ROOT_PATH = process.cwd()
+const FILES = []
+const FINISHED = []
 let BASE_DIR_NAME = ''
 let PATHS = []
 let VARIABLES = null
+let spinner
 
 function start(argv) {
   if (argv.d && (argv.m || argv.mode)) {
@@ -90,6 +94,7 @@ function readDirectory(dirPath) {
 // }
 
 function uploadToCos(filePath) {
+  showLoading(filePath)
   const destDirPath = resolvePath()()
   const { 
     COS_SECRET_ID,
@@ -108,12 +113,33 @@ function uploadToCos(filePath) {
     Key: `${COS_DIRECTORY}${destDirPath}`,
     FilePath: filePath,
     onProgress(progressData) {
-      // console.log('上传进度:', progressData)
     },
   }, function (err, data) {
-    if (err) throw err
-    output.printLink(`${COS_DOMAIN}/${data.Key}`)
+    if (err) {
+      spinner.stop()
+      throw err
+    }
+    stopLoading(`${COS_DOMAIN}/${data.Key}`)
   })
+}
+
+function showLoading (filePath) {
+  if (!FILES.length) {
+    spinner = ora('uploading').start()
+  }
+  if (filePath) {
+    FILES.push(filePath)
+  }
+}
+
+function stopLoading (link) {
+  FINISHED.push(link)
+  if (FILES.length === FINISHED.length) {
+    spinner.stop()
+    FINISHED.forEach(link => {
+      output.printLink(link)
+    })
+  }
 }
 
 module.exports = start

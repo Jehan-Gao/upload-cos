@@ -20,7 +20,8 @@
     "cos-nodejs-sdk-v5": "^2.6.2",
     "dotenv": "^8.2.0",
     "dotenv-flow": "^3.2.0",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "ora": "^4.0.4"
   },
   "bin": {
     "cos-upload": "./bin/main.js"
