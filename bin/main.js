@@ -8,11 +8,12 @@ if (argv.h || argv.help) {
 		'usage: cos-upload [options]',
 		'',
 		'options:',
-		'  -d           Directory to upload.',
-		'  -f           File to upload.',
-		'  -m --mode    read .env.${mode} file',
-		'  -h --help    Print this list and exit.',
-		'  -v           Print version.'
+		' [-d Directory]        Directory to upload.',
+		' [-f File]             File to upload.',
+		' [-o Output]           Output to the cos directory',
+		' [-m Mode]             Read .env.${Mode} file',
+		' -h --help             Print this list and exit.',
+		' [-v Version]          Print version.'
 		].join('\n'))
   process.exit()
 } else if (argv.v) {
