@@ -1,15 +1,15 @@
-# <center>[cos-upload](https://github.com/Jehan-Gao/cos-upload)</center>
-**cos-upload** 是一个可以将指定的**静态资源**上传到腾讯云对象存储(COS)的命令行工具。
+# <center>[upload-cos](https://github.com/Jehan-Gao/upload-cos)</center>
+**upload-cos** 是一个可以将指定的**静态资源**上传到腾讯云对象存储(COS)的命令行工具。
 
 ![](https://img.shields.io/badge/build-passing-brightgreen)
 ## Install 
 ``` shell 
-$ npm install cos-upload -g
+$ npm install upload-cos -g
 ```
 
 ## Usage
 ### 1.配置
-在命令行使用cos-upload之前，你需要在你的项目根目录下创建一个 **.env** 文件。
+在命令行使用upload-cos之前，你需要在你的项目根目录下创建一个 **.env** 文件。
 .env文件需要设置以下参数：
   | Key | Value | 是否必填 |
   | :---: | :----:  | :---:     |
@@ -51,7 +51,7 @@ COS_DIRECTORY=example-dir
 
   
 ### 2.在命令行中使用 
-确保 **.env** 文件的参数配置正确之后， 就可以通过命令行使用cos-upload 上传指定的文件夹或文件。
+确保 **.env** 文件的参数配置正确之后， 就可以通过命令行使用upload-cos 上传指定的文件夹或文件。
 
 假设现有如下目录结构：
 
@@ -74,7 +74,7 @@ project
 
 #### 上传指定的文件目录：
 ```shell 
-$ cos-upload -d dist
+$ upload-cos -d dist
 
 output => 
   https://cdn.example.com/example-dir/dist/css/test.css
@@ -86,7 +86,7 @@ output =>
 
 #### 上传指定的文件目录下的子目录：
 ```shell 
-$ cos-upload -d dist/
+$ upload-cos -d dist/
 
 output => 
   https://cdn.example.com/example-dir/css/test.css
@@ -101,12 +101,12 @@ output =>
 
 #### 上传指定的文件：
 ``` shell
-$ cos-upload -f dist/css/test.css
+$ upload-cos -f dist/css/test.css
 
 output => 
   https://cdn.example.com/example-dir/test.css
 
-$ cos-upload -f dist/images/cdn/a.png
+$ upload-cos -f dist/images/cdn/a.png
 
 output => 
   https://cdn.example.com/example-dir/a.png
@@ -120,13 +120,13 @@ output =>
  > 有些场景,你可能需要将文件上传到指定的文件目录,例如想将 a.png 上传到 example-dir/custom/下。
 
 ``` shell 
-$ cos-upload -f dist/images/cnd/a.png -t custom
+$ upload-cos -f dist/images/cnd/a.png -t custom
 
 output => 
   https://cdn.example.com/example-dir/custom/a.png
 
 
-$ cos-upload -d dist/ -t custom
+$ upload-cos -d dist/ -t custom
 
 output => 
   https://cdn.example.com/example-dir/custom/css/test.css
@@ -139,7 +139,7 @@ output =>
 #### 读取不同的.env文件
 在实际的业务场景中，可能要根据开发环境的不同配置不同的COS参数。例如，在**testing**的时候，需要将静态资源上传到**测试存储桶**，在**production**的时候，需要将静态资源上传到**正式的存储桶**。
 
-而 cos-upload 默认会读取 .env 文件。你可以创建多个 .env.[mode] 文件来配置COS参数。
+而 upload-cos 默认会读取 .env 文件。你可以创建多个 .env.[mode] 文件来配置COS参数。
 
 创建一个.env.testing:
 
@@ -160,7 +160,7 @@ COS_DIRECTORY=example-dir-test
 ```
 通过 -m 指令 来读取指定的 .env 文件
 ``` shell 
-$ cos-upload -m testing -d dist
+$ upload-cos -m testing -d dist
 
 output => 
   https://cdn.example-testing.com/example-dir-test/dist/css/test.css
@@ -174,8 +174,8 @@ output =>
 这里通过 -m testing 指定参数后，读取的是 .env.testing 文件。
 
 ## End
-如果小伙伴们在使用过程中发现bug，[点击这里提bug](https://github.com/Jehan-Gao/cos-upload/issues)。
-如果有小伙伴们想在原有功能上增加新功能，欢迎[PR](https://github.com/Jehan-Gao/cos-upload/pulls)哟。
+如果小伙伴们在使用过程中发现bug，[点击这里提bug](https://github.com/Jehan-Gao/upload-cos/issues)。
+如果有小伙伴们想在原有功能上增加新功能，欢迎[PR](https://github.com/Jehan-Gao/upload-cos/pulls)哟。
 
 
 

@@ -1,5 +1,5 @@
 {
-  "name": "cos-upload",
+  "name": "upload-cos",
   "version": "1.0.0",
   "description": "Upload file to tencent cloud COS",
   "main": "index.js",
@@ -24,6 +24,6 @@
     "ora": "^4.0.4"
   },
   "bin": {
-    "cos-upload": "./bin/main.js"
+    "upload-cos": "./bin/main.js"
   }
 }
