@@ -14,6 +14,7 @@ let PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
 const IGNOER_FILES = [ '.DS_Store']
+const isEndOfSlashReg = /.+\/$/
 let spinner
 
 function start(argv) {
@@ -84,8 +85,7 @@ function resolveDirectory(dirName) {
 }
 
 function parseInputDir(dirName) {
-  const matchRootDir = /.+\/$/
-  return matchRootDir.test(dirName) ? '' : path.parse(dirName).base
+  return isEndOfSlashReg.test(dirName) ? '' : path.parse(dirName).base
 }
 
 function readDirectory(dirPath) {
@@ -145,7 +145,9 @@ function uploadToCos(filePath) {
   cos.sliceUploadFile({
     Bucket: COS_BUCKET,
     Region: COS_REGION,
-    Key: `${COS_DIRECTORY}${destDirPath}`,
+    Key: `${isEndOfSlashReg.test(COS_DIRECTORY) ? 
+      COS_DIRECTORY : 
+      COS_DIRECTORY + '/'}${destDirPath}`,
     FilePath: filePath,
     onProgress(progressData) {
     },
