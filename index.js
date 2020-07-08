@@ -4,6 +4,7 @@ const COS = require('cos-nodejs-sdk-v5')
 const dotenvFlow = require('dotenv-flow')
 const ora = require('ora')
 const output = require('./util/output')
+const checkENVParam = require('./util/check')
 
 const ROOT_PATH = process.cwd()
 const FILES = []
@@ -23,19 +24,15 @@ function start(argv) {
     }
   }
   if (argv.d) {
-    commonHandle(argv, 'directory', argv.d)
+    VARIABLES = commonHandle(argv, 'directory', argv.d)
   }
   if (argv.f) {
-    commonHandle(argv, 'file', argv.f)
-  }
-  if (!VARIABLES) {
-    output.error('Error: > not found any variable')
-    return
+    VARIABLES = commonHandle(argv, 'file', argv.f)
   }
 }
 
 function commonHandle (argv, type, params) {
-  if ((argv.m)) {
+  if (argv.m) {
     VARIABLES = dotenvFlow.parse([
       path.resolve(ROOT_PATH, `.env.${argv.m}`)
     ])
@@ -44,6 +41,8 @@ function commonHandle (argv, type, params) {
       path.resolve(ROOT_PATH, '.env')
     ])
   }
+  if (!checkENVParam(VARIABLES)) return
+
   if (argv.t) {
     DESIGNATIVE_DIRECTORY = argv.t
   }
