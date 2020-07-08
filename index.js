@@ -12,6 +12,7 @@ let BASE_DIR_NAME = ''
 let PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
+const IGNOER_FILES = [ '.DS_Store']
 let spinner
 
 function start(argv) {
@@ -94,6 +95,9 @@ function readDirectory(dirPath) {
     if (Array.isArray(dirList) && dirList.length) {
       for (let i = 0, len = dirList.length; i < len; i++) {
         let content = dirList[i]
+        if (content in IGNOER_FILES) {
+          continue
+        }
         resolvePath(content)
         let subPath = path.resolve(dirPath, content)
         const stat = fs.statSync(subPath)
