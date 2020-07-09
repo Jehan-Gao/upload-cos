@@ -61,14 +61,14 @@ function resolvePath(path) {
     PATHS.push(path)
   }
   return function () {
-    if (BASE_DIR_NAME) {
-      PATHS.unshift(BASE_DIR_NAME)
-    }
+    // if (BASE_DIR_NAME) {
+    //   PATHS.unshift(BASE_DIR_NAME)
+    // }
     if (DESIGNATIVE_DIRECTORY) {
       PATHS.unshift(DESIGNATIVE_DIRECTORY)
     }
     let basePath = PATHS.join('/')
-    PATHS = []
+    // PATHS = []
     return basePath
   }
 }
@@ -91,21 +91,26 @@ function parseInputDir(dirName) {
 function readDirectory(dirPath) {
   try {
     const dirList = fs.readdirSync(dirPath)
+    console.log(dirList, 'dirList')
     if (Array.isArray(dirList) && dirList.length) {
       for (let i = 0, len = dirList.length; i < len; i++) {
         let content = dirList[i]
         if (content in IGNOER_FILES) {
           continue
         }
+        console.log(content, 'content')
         resolvePath(content)
+        console.log(PATHS, 'PATHS')
         let subPath = path.resolve(dirPath, content)
         const stat = fs.statSync(subPath)
         if (stat.isDirectory()) {
           readDirectory(subPath)
         } else if (stat.isFile()) {
           uploadToCos(subPath)
+          PATHS.pop()
         }
       }
+      PATHS = []
     }
   } catch (error) {
     output.error(error)
@@ -130,6 +135,7 @@ function readFile(filePath) {
 function uploadToCos(filePath) {
   showLoading(filePath)
   const destDirPath = resolvePath()()
+  console.log('-----', destDirPath, 'destDirPath')
   const { 
     COS_SECRET_ID,
     COS_SECRET_KEY,
@@ -147,7 +153,7 @@ function uploadToCos(filePath) {
     Region: COS_REGION,
     Key: `${isEndOfSlashReg.test(COS_DIRECTORY) ? 
       COS_DIRECTORY : 
-      COS_DIRECTORY + '/'}${destDirPath}`,
+      COS_DIRECTORY + '/'}${BASE_DIR_NAME ? BASE_DIR_NAME + '/' : ''}${destDirPath}`,
     FilePath: filePath,
     onProgress(progressData) {
     },
