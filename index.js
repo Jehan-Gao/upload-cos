@@ -13,7 +13,7 @@ let BASE_DIR_NAME = ''
 let PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
-const IGNOER_FILES = [ '.DS_Store']
+const IGNOER_FILES = ['.DS_Store']
 const isEndOfSlashReg = /.+\/$/
 let spinner
 
@@ -32,7 +32,7 @@ function start(argv) {
   }
 }
 
-function commonHandle (argv, type, params) {
+function commonHandle(argv, type, params) {
   if (argv.m) {
     VARIABLES = dotenvFlow.parse([
       path.resolve(ROOT_PATH, `.env.${argv.m}`)
@@ -53,30 +53,48 @@ function commonHandle (argv, type, params) {
     })
   } else {
     type === 'file' ? resolveFile(params) : resolveDirectory(params)
-  } 
+  }
 }
 
-function resolvePath(path) {
-  if (path) {
-    PATHS.push(path)
-  }
-  return function () {
-    // if (BASE_DIR_NAME) {
-    //   PATHS.unshift(BASE_DIR_NAME)
-    // }
-    if (DESIGNATIVE_DIRECTORY) {
-      PATHS.unshift(DESIGNATIVE_DIRECTORY)
+const Helper = {
+  getPath: function () {
+    let paths = []
+    if (BASE_DIR_NAME) {
+      paths.push(BASE_DIR_NAME)
     }
-    let basePath = PATHS.join('/')
-    // PATHS = []
-    return basePath
+    if (DESIGNATIVE_DIRECTORY) {
+      paths.push(DESIGNATIVE_DIRECTORY)
+    }
+    return paths.concat(PATHS).join('/')
+  },
+  showLoading: function (filePath) {
+    if (!FILES.length) {
+      spinner = ora('uploading').start()
+    }
+    if (filePath) {
+      FILES.push(filePath)
+    }
+  },
+  stopLoading: function (link) {
+    FINISHED.push(link)
+    if (FILES.length === FINISHED.length) {
+      spinner.stop()
+      FINISHED.forEach(link => {
+        output.printLink(link)
+      })
+    }
+  },
+  isDirectory: function (path) {
+    return fs.statSync(path).isDirectory()
+  },
+  isFile: function (path) {
+    return fs.statSync(path).isFile()
   }
 }
 
 function resolveDirectory(dirName) {
   const dirPath = path.resolve(ROOT_PATH, dirName)
-  const stat = fs.statSync(dirPath)
-  if (!stat.isDirectory()) {
+  if (!Helper.isDirectory(dirPath)) {
     output.error('Error: > not a Directory')
     return
   }
@@ -91,26 +109,20 @@ function parseInputDir(dirName) {
 function readDirectory(dirPath) {
   try {
     const dirList = fs.readdirSync(dirPath)
-    console.log(dirList, 'dirList')
     if (Array.isArray(dirList) && dirList.length) {
       for (let i = 0, len = dirList.length; i < len; i++) {
         let content = dirList[i]
-        if (content in IGNOER_FILES) {
-          continue
-        }
-        console.log(content, 'content')
-        resolvePath(content)
-        console.log(PATHS, 'PATHS')
+        if (content in IGNOER_FILES) continue
+        PATHS.push(content)
         let subPath = path.resolve(dirPath, content)
-        const stat = fs.statSync(subPath)
-        if (stat.isDirectory()) {
+        if (Helper.isDirectory(subPath)) {
           readDirectory(subPath)
-        } else if (stat.isFile()) {
+          PATHS.pop()
+        } else if (Helper.isFile(subPath)) {
           uploadToCos(subPath)
           PATHS.pop()
         }
       }
-      PATHS = []
     }
   } catch (error) {
     output.error(error)
@@ -118,10 +130,9 @@ function readDirectory(dirPath) {
 }
 
 function resolveFile(fileName) {
-  resolvePath(path.parse(fileName).base)
+  PATHS.push(path.parse(fileName).base)
   const filePath = path.resolve(ROOT_PATH, fileName)
-  const stat = fs.statSync(filePath)
-  if (!stat.isFile()) {
+  if (!Helper.isFile(filePath)) {
     output.error('Error: > not a File')
     return
   }
@@ -133,55 +144,42 @@ function readFile(filePath) {
 }
 
 function uploadToCos(filePath) {
-  showLoading(filePath)
-  const destDirPath = resolvePath()()
-  console.log('-----', destDirPath, 'destDirPath')
-  const { 
-    COS_SECRET_ID,
-    COS_SECRET_KEY,
-    COS_BUCKET, 
-    COS_REGION, 
-    COS_DIRECTORY,
-    COS_DOMAIN 
-  } = VARIABLES
-  const cos = new COS({
-    SecretId: COS_SECRET_ID,
-    SecretKey: COS_SECRET_KEY,
-  })
-  cos.sliceUploadFile({
-    Bucket: COS_BUCKET,
-    Region: COS_REGION,
-    Key: `${isEndOfSlashReg.test(COS_DIRECTORY) ? 
-      COS_DIRECTORY : 
-      COS_DIRECTORY + '/'}${BASE_DIR_NAME ? BASE_DIR_NAME + '/' : ''}${destDirPath}`,
-    FilePath: filePath,
-    onProgress(progressData) {
-    },
-  }, function (err, data) {
-    if (err) {
-      spinner.stop()
-      throw err
-    }
-    stopLoading(`${COS_DOMAIN}/${data.Key}`)
-  })
-}
-
-function showLoading (filePath) {
-  if (!FILES.length) {
-    spinner = ora('uploading').start()
-  }
-  if (filePath) {
-    FILES.push(filePath)
-  }
-}
-
-function stopLoading (link) {
-  FINISHED.push(link)
-  if (FILES.length === FINISHED.length) {
-    spinner.stop()
-    FINISHED.forEach(link => {
-      output.printLink(link)
+  try {
+    Helper.showLoading(filePath)
+    const destDirPath = Helper.getPath()
+    console.log('----', destDirPath)
+    // return
+    const {
+      COS_SECRET_ID,
+      COS_SECRET_KEY,
+      COS_BUCKET,
+      COS_REGION,
+      COS_DIRECTORY,
+      COS_DOMAIN
+    } = VARIABLES
+    const cos = new COS({
+      SecretId: COS_SECRET_ID,
+      SecretKey: COS_SECRET_KEY,
     })
+    cos.sliceUploadFile({
+      Bucket: COS_BUCKET,
+      Region: COS_REGION,
+      Key: `${isEndOfSlashReg.test(COS_DIRECTORY) ?
+        COS_DIRECTORY :
+        COS_DIRECTORY + '/'}${destDirPath}`,
+      FilePath: filePath,
+      onProgress(progressData) {
+      },
+    }, function (err, data) {
+      if (err) {
+        spinner.stop()
+        throw err
+      }
+      Helper.stopLoading(`${COS_DOMAIN}/${data.Key}`)
+    })
+  } catch (error) {
+    output.error(error)
+    Helper.stopLoading()
   }
 }
 
