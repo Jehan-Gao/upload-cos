@@ -10,7 +10,7 @@ const ROOT_PATH = process.cwd()
 const FILES = []
 const FINISHED = []
 let BASE_DIR_NAME = ''
-let PATHS = []
+const PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
 const IGNOER_FILES = ['.DS_Store']
@@ -34,13 +34,9 @@ function start(argv) {
 
 function commonHandle(argv, type, params) {
   if (argv.m) {
-    VARIABLES = dotenvFlow.parse([
-      path.resolve(ROOT_PATH, `.env.${argv.m}`)
-    ])
+    VARIABLES = dotenvFlow.parse([path.resolve(ROOT_PATH, `.env.${argv.m}`)])
   } else {
-    VARIABLES = dotenvFlow.parse([
-      path.resolve(ROOT_PATH, '.env')
-    ])
+    VARIABLES = dotenvFlow.parse([path.resolve(ROOT_PATH, '.env')])
   }
   if (!checkENVParam(VARIABLES)) return
 
@@ -48,7 +44,7 @@ function commonHandle(argv, type, params) {
     DESIGNATIVE_DIRECTORY = argv.t
   }
   if (Array.isArray(params)) {
-    params.forEach(dirName => {
+    params.forEach((dirName) => {
       type === 'file' ? resolveFile(dirName) : resolveDirectory(dirName)
     })
   } else {
@@ -58,7 +54,7 @@ function commonHandle(argv, type, params) {
 
 const Helper = {
   getPath: function () {
-    let paths = []
+    const paths = []
     if (BASE_DIR_NAME) {
       paths.push(BASE_DIR_NAME)
     }
@@ -79,7 +75,7 @@ const Helper = {
     FINISHED.push(link)
     if (FILES.length === FINISHED.length) {
       spinner.stop()
-      FINISHED.forEach(link => {
+      FINISHED.forEach((link) => {
         output.printLink(link)
       })
     }
@@ -111,10 +107,10 @@ function readDirectory(dirPath) {
     const dirList = fs.readdirSync(dirPath)
     if (Array.isArray(dirList) && dirList.length) {
       for (let i = 0, len = dirList.length; i < len; i++) {
-        let content = dirList[i]
+        const content = dirList[i]
         if (content in IGNOER_FILES) continue
         PATHS.push(content)
-        let subPath = path.resolve(dirPath, content)
+        const subPath = path.resolve(dirPath, content)
         if (Helper.isDirectory(subPath)) {
           readDirectory(subPath)
           PATHS.pop()
@@ -157,24 +153,28 @@ function uploadToCos(filePath) {
     } = VARIABLES
     const cos = new COS({
       SecretId: COS_SECRET_ID,
-      SecretKey: COS_SECRET_KEY,
+      SecretKey: COS_SECRET_KEY
     })
-    cos.sliceUploadFile({
-      Bucket: COS_BUCKET,
-      Region: COS_REGION,
-      Key: `${isEndOfSlashReg.test(COS_DIRECTORY) ?
-        COS_DIRECTORY :
-        COS_DIRECTORY + '/'}${destDirPath}`,
-      FilePath: filePath,
-      onProgress(progressData) {
+    cos.sliceUploadFile(
+      {
+        Bucket: COS_BUCKET,
+        Region: COS_REGION,
+        Key: `${
+          isEndOfSlashReg.test(COS_DIRECTORY)
+            ? COS_DIRECTORY
+            : COS_DIRECTORY + '/'
+        }${destDirPath}`,
+        FilePath: filePath,
+        onProgress(progressData) {}
       },
-    }, function (err, data) {
-      if (err) {
-        spinner.stop()
-        throw err
+      function (err, data) {
+        if (err) {
+          spinner.stop()
+          throw err
+        }
+        Helper.stopLoading(`${COS_DOMAIN}/${data.Key}`)
       }
-      Helper.stopLoading(`${COS_DOMAIN}/${data.Key}`)
-    })
+    )
   } catch (error) {
     output.error(error)
     Helper.stopLoading()
