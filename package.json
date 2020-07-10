@@ -4,7 +4,8 @@
   "description": "Upload file to tencent cloud COS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version -- -r"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,29 @@
   },
   "bin": {
     "upload-cos": "./bin/main.js"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier-eslint": "^11.0.0",
+    "standard-version": "^8.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
