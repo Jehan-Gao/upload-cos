@@ -7,10 +7,10 @@ const output = require('./util/output')
 const checkENVParam = require('./util/check')
 
 const ROOT_PATH = process.cwd()
-const FILES = []
-const FINISHED = []
+let FILES = []
+let FINISHED = []
 let BASE_DIR_NAME = ''
-const PATHS = []
+let PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
 const IGNOER_FILES = ['.DS_Store']
@@ -71,13 +71,19 @@ const Helper = {
       FILES.push(filePath)
     }
   },
-  stopLoading: function (link) {
+  stopLoading: function () {
+    spinner.stop()
+  },
+  print: function (link) {
     FINISHED.push(link)
     if (FILES.length === FINISHED.length) {
-      spinner.stop()
+      this.stopLoading()
       FINISHED.forEach((link) => {
         output.printLink(link)
       })
+      FINISHED = []
+      FILES = []
+      PATHS = []
     }
   },
   isDirectory: function (path) {
@@ -172,7 +178,7 @@ function uploadToCos(filePath) {
           spinner.stop()
           throw err
         }
-        Helper.stopLoading(`${COS_DOMAIN}/${data.Key}`)
+        Helper.print(`${COS_DOMAIN}/${data.Key}`)
       }
     )
   } catch (error) {
