@@ -36,6 +36,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
     "prettier-eslint": "^11.0.0",
     "standard-version": "^8.0.0"
   },
@@ -45,7 +46,7 @@
     }
   },
   "lint-staged": {
-    "*.{js}": [
+    "*.js": [
       "prettier --write",
       "eslint --fix",
       "git add"
