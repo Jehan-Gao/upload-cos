@@ -147,7 +147,6 @@ function uploadToCos(filePath) {
   try {
     Helper.showLoading(filePath)
     const destDirPath = Helper.getPath()
-    console.log('----', destDirPath)
     const {
       COS_SECRET_ID,
       COS_SECRET_KEY,
