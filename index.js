@@ -20,7 +20,7 @@ let spinner
 function start(argv) {
   for (key in argv) {
     if (argv[key] === true) {
-      output.error(`-${key}: not found param`)
+      output.error(`Not found value of -${key}`)
       return
     }
   }
@@ -95,7 +95,7 @@ const Helper = {
 function resolveDirectory(dirName) {
   const dirPath = path.resolve(ROOT_PATH, dirName)
   if (!Helper.isDirectory(dirPath)) {
-    output.error('Error: > not a Directory')
+    output.error('Not a directory')
     return
   }
   BASE_DIR_NAME = parseInputDir(dirName)
@@ -133,7 +133,7 @@ function resolveFile(fileName) {
   PATHS.push(path.parse(fileName).base)
   const filePath = path.resolve(ROOT_PATH, fileName)
   if (!Helper.isFile(filePath)) {
-    output.error('Error: > not a File')
+    output.error('Not a file')
     return
   }
   readFile(filePath)
@@ -148,7 +148,6 @@ function uploadToCos(filePath) {
     Helper.showLoading(filePath)
     const destDirPath = Helper.getPath()
     console.log('----', destDirPath)
-    // return
     const {
       COS_SECRET_ID,
       COS_SECRET_KEY,
