@@ -1,10 +1,20 @@
 # <center>[upload-cos](https://github.com/Jehan-Gao/upload-cos)</center>
 **upload-cos** 是一个可以将指定的**静态资源**上传到腾讯云对象存储(COS)的命令行工具。
 
-![](https://img.shields.io/badge/build-passing-brightgreen)
+[![Build Status](https://travis-ci.com/Jehan-Gao/upload-cos.svg?branch=master)](https://travis-ci.com/Jehan-Gao/upload-cos)
+
+## [CHANGELOG](./CHANGELOG.md)
+
 ## Install 
+#### Global
+Install globally (add to your PATH):
 ``` shell 
 $ npm install upload-cos -g
+```
+#### Local
+Install and add to devDependencies: 
+```shell
+$ npm install upload-cos --save-dev
 ```
 
 ## Usage
