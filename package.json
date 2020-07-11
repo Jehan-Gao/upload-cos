@@ -1,6 +1,6 @@
 {
   "name": "upload-cos",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Upload file to tencent cloud COS",
   "main": "index.js",
   "scripts": {
