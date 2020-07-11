@@ -230,6 +230,9 @@ output =>
 如果小伙伴们在使用过程中发现bug，[点击这里提bug](https://github.com/Jehan-Gao/upload-cos/issues)。
 如果有小伙伴们想在原有功能上增加新功能，[欢迎提PR](https://github.com/Jehan-Gao/upload-cos/pulls)。
 
+## License
+[MIT](./LICENSE)
+
 
 
 
