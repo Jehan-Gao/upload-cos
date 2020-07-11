@@ -9,8 +9,8 @@ $ npm install upload-cos -g
 
 ## Usage
 ### 1.配置
-在命令行使用upload-cos之前，你需要在你的项目根目录下创建一个 **.env** 文件。
-.env文件需要设置以下参数：
+在命令行使用upload-cos之前，你需要在你的项目根目录下创建一个 `.env` 文件。
+`.env`文件需要设置以下参数：
   | Key | Value | 是否必填 |
   | :---: | :----:  | :---:     |
   | COS_SECRET_ID | 用户的 SecretId | 是 |
@@ -40,18 +40,9 @@ COS_DIRECTORY=example-dir
 
   详细请参考腾讯云COS JavaScript SDK 文档：https://cloud.tencent.com/document/product/436/11459
 
-
-#### 添加git忽略内容：
-```
-.gitignore
-  .env
-  .env.*
-```
-
-
   
 ### 2.在命令行中使用 
-确保 **.env** 文件的参数配置正确之后， 就可以通过命令行使用upload-cos 上传指定的文件夹或文件。
+确保 `.env` 文件的参数配置正确之后， 就可以通过命令行使用 upload-cos 上传指定的文件夹或文件。
 
 假设现有如下目录结构：
 
@@ -96,7 +87,7 @@ output =>
 
 ```
 
-其中, https://cdn.example.com 和 example-dir 都是通过.env文件配置的。
+其中, https://cdn.example.com 和 example-dir 都是通过 `.env` 文件配置的。
 
 
 #### 上传指定的文件：
@@ -111,7 +102,7 @@ $ upload-cos -f dist/images/cdn/a.png
 output => 
   https://cdn.example.com/example-dir/a.png
 ```
-通过 -f 指令上传文件，会将读取到的文件上传到 **COS_DIRECTORY**(存放资源的根目录)下。
+通过 -f 指令上传文件，会将读取到的文件上传到 `COS_DIRECTORY(存放资源的根目录)`下。
 
 
 
@@ -136,12 +127,12 @@ output =>
 
 ```
     
-#### 读取不同的.env文件
-在实际的业务场景中，可能要根据开发环境的不同配置不同的COS参数。例如，在**testing**的时候，需要将静态资源上传到**测试存储桶**，在**production**的时候，需要将静态资源上传到**正式的存储桶**。
+#### 读取不同的 `.env.*` 文件
+在实际的业务场景中，可能要根据开发环境的不同配置不同的COS参数。例如，在 `testing` 的时候，需要将静态资源上传到 `测试存储桶` ，在 `production` 的时候，需要将静态资源上传到 `正式的存储桶` 。
 
-而 upload-cos 默认会读取 .env 文件。你可以创建多个 .env.[mode] 文件来配置COS参数。
+而 upload-cos 默认会读取 `.env`文件。你可以创建多个 `.env.*` 文件来配置COS参数。
 
-创建一个.env.testing:
+创建一个 `.env.testing`:
 
 ```
  .env.testing
@@ -170,12 +161,59 @@ output =>
 
 ```
 
-可以看到，通过 -m 指定参数后，会读取对应的 .env.[mode] 文件。
-这里通过 -m testing 指定参数后，读取的是 .env.testing 文件。
+可以看到，通过 -m 指定参数后，会读取对应的 `.env.*` 文件。
+这里通过 -m testing 指定参数后，读取的是 `.env.testing` 文件。
+
+再创建一个 `.env.production`：
+```
+.env.production
+
+COS_SECRET_ID=HFAFHAOFKAHFKAFA
+
+COS_SECRET_KEY=JSHAFHAKHFKAHFKSHAKF
+
+COS_REGION=ap-beijing
+
+COS_DOMAIN=https://cdn.example-pro.com
+
+COS_BUCKET=example-bucket-pro-22222
+
+COS_DIRECTORY=example-dir-pro
+```
+
+``` shell 
+$ upload-cos -m production -d dist
+
+output => 
+  https://cdn.example-pro.com/example-dir-pro/dist/css/test.css
+  https://cdn.example-pro.com/example-dir-pro/dist/js/test.js
+  https://cdn.example-pro.com/example-dir-pro/dist/dist/images/cdn/a.png
+  https://cdn.example-pro.com/example-dir-pro/dist/dist/index.html
+
+```
+
+#### 设置.gitignore
+如果你的项目是公开的，那么在 .env 和 .env.* 文件配置COS keys，会让你在推送代码时将私密信息被上传到远程仓库，此时你需要在 .gitignore 中添加忽略的文件。
+```
+.gitignore
+
+...
+...
+.env
+.env.*
+```
+
+## CDN 缓存刷新
+目前, 腾讯云 CDN 缓存刷新有两种方式:
+  - 通过控制台手动刷新。详见：https://cloud.tencent.com/document/product/228/6299
+
+  - 通过COS结合SCF，实现在COS文件更新时自动刷新。
+  详见：https://cloud.tencent.com/document/product/436/30434
+
 
 ## End
 如果小伙伴们在使用过程中发现bug，[点击这里提bug](https://github.com/Jehan-Gao/upload-cos/issues)。
-如果有小伙伴们想在原有功能上增加新功能，欢迎[PR](https://github.com/Jehan-Gao/upload-cos/pulls)哟。
+如果有小伙伴们想在原有功能上增加新功能，[欢迎提PR](https://github.com/Jehan-Gao/upload-cos/pulls)。
 
 
 
