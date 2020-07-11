@@ -1,7 +1,12 @@
 # <center>[upload-cos](https://github.com/Jehan-Gao/upload-cos)</center>
 **upload-cos** 是一个可以将指定的**静态资源**上传到腾讯云对象存储(COS)的命令行工具。
 
-[![Build Status](https://travis-ci.com/Jehan-Gao/upload-cos.svg?branch=master)](https://travis-ci.com/Jehan-Gao/upload-cos)
+<a href="https://travis-ci.com/Jehan-Gao/upload-cos">
+<img src="https://travis-ci.com/Jehan-Gao/upload-cos.svg?branch=master">
+</a>
+<a href="https://www.npmjs.com/package/upload-cos">
+<img src="https://img.shields.io/npm/v/upload-cos">
+</a>
 
 ## [CHANGELOG](./CHANGELOG.md)
 
@@ -121,7 +126,7 @@ output =>
  > 有些场景,你可能需要将文件上传到指定的文件目录,例如想将 a.png 上传到 example-dir/custom/下。
 
 ``` shell 
-$ upload-cos -f dist/images/cnd/a.png -t custom
+$ upload-cos -f dist/images/cdn/a.png -t custom
 
 output => 
   https://cdn.example.com/example-dir/custom/a.png
