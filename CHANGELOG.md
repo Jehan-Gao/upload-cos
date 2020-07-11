@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/Jehan-Gao/cos-upload/compare/v1.0.3...v1.0.4) (2020-07-11)
+
+
+### Update
+
+* update README.MD for add npm icon ([d2bd9b0](https://github.com/Jehan-Gao/cos-upload/commit/d2bd9b0bb2b387c3bd6433fd048f81959329c863))
+
 ### [1.0.3](https://github.com/Jehan-Gao/cos-upload/compare/v1.0.1...v1.0.3) (2020-07-11)
 
 
