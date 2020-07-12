@@ -5,6 +5,7 @@ const dotenvFlow = require('dotenv-flow')
 const ora = require('ora')
 const output = require('./util/output')
 const checkENVParam = require('./util/check')
+const IGNOER_FILES = require('./util/constants')
 
 const ROOT_PATH = process.cwd()
 let FILES = []
@@ -13,10 +14,11 @@ let BASE_DIR_NAME = ''
 let PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
-const IGNOER_FILES = ['.DS_Store']
 const isEndOfSlashReg = /.+\/$/
 
-function start(argv) {
+let cb
+function start(argv, callback) {
+  cb = callback
   for (key in argv) {
     if (argv[key] === true) {
       output.error(`Not found value of -${key}`)
@@ -65,7 +67,7 @@ const Helper = {
   },
   showLoading: function (filePath) {
     if (!FILES.length) {
-      this.spinner = ora('uploading').start()
+      this.spinner = ora('uploading \n').start()
     }
     if (filePath) {
       FILES.push(filePath)
@@ -161,15 +163,22 @@ function uploadToCos(filePath) {
       SecretId: COS_SECRET_ID,
       SecretKey: COS_SECRET_KEY
     })
+    const finalPath = `${
+      isEndOfSlashReg.test(COS_DIRECTORY) ? COS_DIRECTORY : COS_DIRECTORY + '/'
+    }${destDirPath}`
+    // just for test invoke
+    if (cb) {
+      cb({
+        finalPath,
+        VARIABLES
+      })
+      return Helper.stopLoading()
+    }
     cos.sliceUploadFile(
       {
         Bucket: COS_BUCKET,
         Region: COS_REGION,
-        Key: `${
-          isEndOfSlashReg.test(COS_DIRECTORY)
-            ? COS_DIRECTORY
-            : COS_DIRECTORY + '/'
-        }${destDirPath}`,
+        Key: finalPath,
         FilePath: filePath,
         onProgress(progressData) {}
       },

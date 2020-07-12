@@ -11,6 +11,7 @@ module.exports = {
     // allow debugger during development
     'no-tabs': 'off',
     'space-before-function-paren': 0,
-    'no-undef': 0,
+    // 'no-undef': 0,
+    'standard/no-callback-literal': 0,
   },
 }
