@@ -15,7 +15,6 @@ let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
 const IGNOER_FILES = ['.DS_Store']
 const isEndOfSlashReg = /.+\/$/
-let spinner
 
 function start(argv) {
   for (key in argv) {
@@ -53,6 +52,7 @@ function commonHandle(argv, type, params) {
 }
 
 const Helper = {
+  spinner: null,
   getPath: function () {
     const paths = []
     if (BASE_DIR_NAME) {
@@ -65,14 +65,14 @@ const Helper = {
   },
   showLoading: function (filePath) {
     if (!FILES.length) {
-      spinner = ora('uploading').start()
+      this.spinner = ora('uploading').start()
     }
     if (filePath) {
       FILES.push(filePath)
     }
   },
   stopLoading: function () {
-    spinner.stop()
+    this.spinner.stop()
   },
   print: function (link) {
     FINISHED.push(link)
@@ -175,7 +175,6 @@ function uploadToCos(filePath) {
       },
       function (err, data) {
         if (err) {
-          spinner.stop()
           throw err
         }
         Helper.print(`${COS_DOMAIN}/${data.Key}`)
