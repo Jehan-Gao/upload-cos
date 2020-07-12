@@ -1,10 +1,10 @@
-const Keys = require('./constants')
+const { ENV_KEYS } = require('./constants')
 const output = require('./output')
 
 module.exports = function (envConfig) {
-  let sure = []
-  for (let i = 0, len = Keys.length; i < len; i++) {
-    let key = Keys[i]
+  const sure = []
+  for (let i = 0, len = ENV_KEYS.length; i < len; i++) {
+    const key = ENV_KEYS[i]
     if (!(key in envConfig)) {
       output.error(`Error: > not found ${key} in .env file`)
       break
@@ -15,5 +15,5 @@ module.exports = function (envConfig) {
     }
     sure.push(1)
   }
-  return sure.length === Keys.length
+  return sure.length === ENV_KEYS.length
 }

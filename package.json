@@ -4,8 +4,8 @@
   "description": "Upload file to tencent cloud COS",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "standard-version -- -r"
+    "test": "tape test/index.js",
+    "release": "standard-version"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,8 @@
     "lint-staged": "^10.2.11",
     "prettier": "^2.0.5",
     "prettier-eslint": "^11.0.0",
-    "standard-version": "^8.0.0"
+    "standard-version": "^8.0.0",
+    "tape": "^5.0.1"
   },
   "husky": {
     "hooks": {
