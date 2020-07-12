@@ -5,54 +5,63 @@ const dotenvFlow = require('dotenv-flow')
 const ora = require('ora')
 const output = require('./util/output')
 const checkENVParam = require('./util/check')
+const IGNOER_FILES = require('./util/constants')
 
 const ROOT_PATH = process.cwd()
-let FILES = []
-let FINISHED = []
+const matchSlashReg = /.+\/$/
 let BASE_DIR_NAME = ''
 let PATHS = []
 let VARIABLES = null
 let DESIGNATIVE_DIRECTORY = ''
-const IGNOER_FILES = ['.DS_Store']
-const isEndOfSlashReg = /.+\/$/
+let handleFn
 
-function start(argv) {
-  for (key in argv) {
-    if (argv[key] === true) {
-      output.error(`Not found value of -${key}`)
-      return
-    }
-  }
-  if (argv.d) {
-    VARIABLES = commonHandle(argv, 'directory', argv.d)
-  }
-  if (argv.f) {
-    VARIABLES = commonHandle(argv, 'file', argv.f)
-  }
+function start(argv, fn) {
+  handleFn = fn
+  if (!checkArgv(argv)) return
+  commonHandle(argv)
 }
 
-function commonHandle(argv, type, params) {
+function checkArgv(argv) {
+  let result = true
+  for (const key in argv) {
+    if (argv[key] === true) {
+      output.error(`Not found -${key} value`)
+      result = false
+      break
+    }
+  }
+  return result
+}
+
+function commonHandle(argv) {
+  const envPath = argv.e && argv.e !== true ? argv.e : ''
   if (argv.m) {
-    VARIABLES = dotenvFlow.parse([path.resolve(ROOT_PATH, `.env.${argv.m}`)])
+    VARIABLES = dotenvFlow.parse([
+      path.resolve(ROOT_PATH, envPath, `.env.${argv.m}`)
+    ])
   } else {
-    VARIABLES = dotenvFlow.parse([path.resolve(ROOT_PATH, '.env')])
+    VARIABLES = dotenvFlow.parse([path.resolve(ROOT_PATH, envPath, '.env')])
   }
   if (!checkENVParam(VARIABLES)) return
-
   if (argv.t) {
     DESIGNATIVE_DIRECTORY = argv.t
+  } else {
+    DESIGNATIVE_DIRECTORY = ''
   }
-  if (Array.isArray(params)) {
-    params.forEach((dirName) => {
-      type === 'file' ? resolveFile(dirName) : resolveDirectory(dirName)
+  const target = argv.f || argv.d
+  if (Array.isArray(target)) {
+    target.forEach((dirName) => {
+      target === argv.f ? resolveFile(dirName) : resolveDirectory(dirName)
     })
   } else {
-    type === 'file' ? resolveFile(params) : resolveDirectory(params)
+    target === argv.f ? resolveFile(target) : resolveDirectory(target)
   }
 }
 
 const Helper = {
   spinner: null,
+  files: [],
+  finished: [],
   getPath: function () {
     const paths = []
     if (BASE_DIR_NAME) {
@@ -64,25 +73,25 @@ const Helper = {
     return paths.concat(PATHS).join('/')
   },
   showLoading: function (filePath) {
-    if (!FILES.length) {
-      this.spinner = ora('uploading').start()
+    if (!this.files.length) {
+      this.spinner = ora('uploading \n').start()
     }
     if (filePath) {
-      FILES.push(filePath)
+      this.files.push(filePath)
     }
   },
   stopLoading: function () {
     this.spinner.stop()
   },
   print: function (link) {
-    FINISHED.push(link)
-    if (FILES.length === FINISHED.length) {
+    this.finished.push(link)
+    if (this.files.length === this.finished.length) {
       this.stopLoading()
-      FINISHED.forEach((link) => {
+      this.finished.forEach((link) => {
         output.printLink(link)
       })
-      FINISHED = []
-      FILES = []
+      this.finished = []
+      this.files = []
       PATHS = []
     }
   },
@@ -105,7 +114,7 @@ function resolveDirectory(dirName) {
 }
 
 function parseInputDir(dirName) {
-  return isEndOfSlashReg.test(dirName) ? '' : path.parse(dirName).base
+  return matchSlashReg.test(dirName) ? '' : path.parse(dirName).base
 }
 
 function readDirectory(dirPath) {
@@ -143,6 +152,7 @@ function resolveFile(fileName) {
 
 function readFile(filePath) {
   uploadToCos(filePath)
+  PATHS = []
 }
 
 function uploadToCos(filePath) {
@@ -161,29 +171,29 @@ function uploadToCos(filePath) {
       SecretId: COS_SECRET_ID,
       SecretKey: COS_SECRET_KEY
     })
+    const finalPath = `${
+      matchSlashReg.test(COS_DIRECTORY) ? COS_DIRECTORY : COS_DIRECTORY + '/'
+    }${destDirPath}`
     cos.sliceUploadFile(
       {
         Bucket: COS_BUCKET,
         Region: COS_REGION,
-        Key: `${
-          isEndOfSlashReg.test(COS_DIRECTORY)
-            ? COS_DIRECTORY
-            : COS_DIRECTORY + '/'
-        }${destDirPath}`,
+        Key: finalPath,
         FilePath: filePath,
         onProgress(progressData) {}
       },
       function (err, data) {
-        if (err) {
-          throw err
-        }
-        Helper.print(`${COS_DOMAIN}/${data.Key}`)
+        handleFn(err, { data, COS_DOMAIN, finalPath })
       }
     )
   } catch (error) {
     output.error(error)
+  } finally {
     Helper.stopLoading()
   }
 }
 
-module.exports = start
+module.exports = {
+  start,
+  Helper
+}
