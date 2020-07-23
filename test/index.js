@@ -160,4 +160,5 @@ test('upload-cos -f test/test_directory/css/subs/a.css -m other', (t) => {
     }
   )
   t.end()
+  process.exit()
 })

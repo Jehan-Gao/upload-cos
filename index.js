@@ -188,8 +188,6 @@ function uploadToCos(filePath) {
     )
   } catch (error) {
     output.error(error)
-  } finally {
-    Helper.stopLoading()
   }
 }
 
