@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5](https://github.com/Jehan-Gao/cos-upload/compare/v1.0.4...v1.0.5) (2020-07-23)
+
+
+### Bug Fixes
+
+* optimize code ([f326b5d](https://github.com/Jehan-Gao/cos-upload/commit/f326b5db2019b02bcb06d6876bfc34051706a2dc))
+
+
+### Update
+
+* add License to README.MD ([12a03bb](https://github.com/Jehan-Gao/cos-upload/commit/12a03bba95f87499393cb0e158ff5d2aad10df35))
+
 ### [1.0.4](https://github.com/Jehan-Gao/cos-upload/compare/v1.0.3...v1.0.4) (2020-07-11)
 
 
